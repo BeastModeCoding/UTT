@@ -9,7 +9,7 @@ from datetime import date
 # 2.Добавить функцию единичного суммирования результатов (+запись в файл)
 
 ####### Manual settings ########
-countEvents = True
+countEvents = False
 page_events = 3
 banned = []
 tied = {}
@@ -19,8 +19,8 @@ excluded_events = []
 lb = {}
 awards = [30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 5, 4, 3, 2, 1]
 Months = {'Jan':0,'Feb':1,'Mar':2,'Apr':3,'May':4,'Jun':5,'Jul':6,'Aug':7,'Sep':8,'Oct':9,'Nov':10,'Dec':11}
-current_month = 12 #date.today().month
-year = 2021 #date.today().year
+current_month = date.today().month
+year = date.today().year
 playerDataLen = 5 if countEvents else 4
 
 def update_lb(tnmt):
