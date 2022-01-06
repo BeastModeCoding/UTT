@@ -4,26 +4,18 @@ from bs4 import BeautifulSoup as BS
 import pandas as pd
 from datetime import date
 
-#### TO_DO
+##### TO_DO #####
 # 1.Добавить автоматическую проверку на бан
 # 2.Добавить функцию единичного суммирования результатов (+запись в файл)
 
 ####### Manual settings ########
 countEvents = True
 page_events = 3
-banned = ['auroline', 'stevis5ontwitch', 'itpmeet', 'ra6931', '8dragonchess8', 
-'lacasadepapel03', 'child_hikaru', 'kaedeazu', 'dragonwizard17', 'radin-professional']
-tied = {'kiaseh':1, 'zugzwangutan':1, 'checkmateg64':2, 'niyazipro':2, 'great_champ':2, 'patzers':2, 'typewriter44':3, 
-'checkmagnus':2, 'dhaka_chess':2, 'casilla32':1, 'mikechesser':7, 'ramones93':1, 'lightning':2, 'peterchaplin':1, 'vivoj':2,
-'bluemeat':1, 'speedycyclone':2, 'yuki':5, 'babakay':2, 'bala67':1, 'dhaka_chess':1}
+banned = []
+tied = {}
 # Put here links of excluded events starting after ...live/
-excluded_events = ['untitled-tuesday-2776557', 'untitled-tuesday-reiteration-2827370']
+excluded_events = []
 ############################################################################################################
-tied_2 = {'mathperson2015': 30, 'typewriter44': 25, 'peterchaplin': 20, 'smyslovfan': 18, 'matthew_d': 16, 'jidemoni': 14,
-'phatchess': 12, 'radjagoeks': 10, 'johnstipp-bethune':8, 'henryhetolifantje': 8, 'gcedw2001':5, 'patzers': 4,
-'imdavidbeardnov': 3, 'mikechesser': 2, 'bigdog2008':1}
-# ties_for_chart = {'mikechesser':[0,0,0,0,0,2,0,0,0,0,0,0], 'smyslovfan':[0,0,0,0,0,0,0,0,0,0,0,0], 'peterchaplin':[0,0,0,0,0,0,1,0,0,0,0,0]}
-################################
 lb = {}
 awards = [30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 5, 4, 3, 2, 1]
 Months = {'Jan':0,'Feb':1,'Mar':2,'Apr':3,'May':4,'Jun':5,'Jul':6,'Aug':7,'Sep':8,'Oct':9,'Nov':10,'Dec':11}
@@ -209,16 +201,7 @@ def lb_corrections():
     else:
       lb[player] = [0 for i in range(playerDataLen)]
       lb[player][0] += tied[player]
-  ################################################3
-  for player in tied_2:
-    # print(lb.get(player))
-    if lb.get(player, 0):
-      lb[player][0] += tied_2[player]
-      # print("Added", tied[player], "points")
-    else:
-      lb[player] = [0 for i in range(playerDataLen)]
-      lb[player][0] += tied_2[player]
-  ####################################################3
+
 def update_all_tnmts():
   # Test for one tourney:
   # links = ['saturday-event---january-1892407']
@@ -264,5 +247,5 @@ if __name__ == "__main__":
   lb = sort_dict(lb)
   write_to_excel(lb)
   # draw_chart_top3(['mikechesser', 'smyslovfan', 'peterchaplin'])
-  print("(!) Manually add 2 points in chart to MikeChesser in June and 5 points in August; 1 point to Peter in July") 
-  print("(!) For MikeChesser change one 3rd place to 2nd; math - 1st, type -2nd, pete -3rd")
+  #   print("(!) Manually add 2 points in chart to MikeChesser in June and 5 points in August; 1 point to Peter in July") 
+  #   print("(!) For MikeChesser change one 3rd place to 2nd; math - 1st, type -2nd, pete -3rd")
