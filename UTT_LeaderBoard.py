@@ -4,18 +4,19 @@ from bs4 import BeautifulSoup as BS
 import pandas as pd
 from datetime import date
 
-##### TO_DO #####
+#### TO_DO
 # 1.Добавить автоматическую проверку на бан
 # 2.Добавить функцию единичного суммирования результатов (+запись в файл)
 
 ####### Manual settings ########
 countEvents = False
-page_events = 3
-banned = []
-tied = {}
+page_events = 1
+banned = ['kingss9830']
+tied = {'nyameba':-2, 'nicelynicely':-1}
 # Put here links of excluded events starting after ...live/
 excluded_events = []
-############################################################################################################
+# ties_for_chart = {'mikechesser':[0,0,0,0,0,2,0,0,0,0,0,0], 'smyslovfan':[0,0,0,0,0,0,0,0,0,0,0,0], 'peterchaplin':[0,0,0,0,0,0,1,0,0,0,0,0]}
+################################
 lb = {}
 awards = [30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 5, 4, 3, 2, 1]
 Months = {'Jan':0,'Feb':1,'Mar':2,'Apr':3,'May':4,'Jun':5,'Jul':6,'Aug':7,'Sep':8,'Oct':9,'Nov':10,'Dec':11}
@@ -95,7 +96,7 @@ def write_to_excel(leaderboard):
     '1st': [player[1][1] for player in lb],
     '2nd': [player[1][2] for player in lb],
     '3rd': [player[1][3] for player in lb],
-    'Played': [player[1][4] for player in lb] #If counting participations, otherwise comment this line
+    'Played': [player[1][4] for player in lb]
     }
   else:
     lb = {
@@ -107,8 +108,30 @@ def write_to_excel(leaderboard):
     }
   df = pd.DataFrame(lb)
   df.index += 1
+
   df.to_excel('./UTT_LB.xlsx', sheet_name='Leaderboard', index_label="Rank")
   print("Printed to Excel")
+
+  # Print to HTML format
+  html_string = '''
+    <html>
+      <head><title>UTT Leaderboard</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&family=Supermercado+One&display=swap');
+      </style>
+      </head>
+      <link rel="stylesheet" type="text/css" href="df_style.css"/>
+      <body>
+        <div class="bg"> 
+          <img class="logo" src="Utt_logo.png" alt="UTT_logo">
+        </div>
+        {table}
+      </body>
+    </html>
+  '''
+  with open('UTT_Leaderboard.html', 'w') as f:
+    f.write(html_string.format(table=df.to_html(classes="redTable")))
+  print("Printed to HTML")
 
 # Select all tourneys from this year
 def select_all_tnmts():
@@ -144,11 +167,11 @@ def get_chart_values(player:str):
 
     # Select events from year
     for i in range(len(dates)):
-      date = int(dates[i].get_text().split(', ')[1])
+      yr = int(dates[i].get_text().split(', ')[1])
       # print("Date:", date)
       month = dates[i].get_text().rsplit()[0]
       # print("Month:", month)
-      if date == year:
+      if yr == year:
         url = events[i].select_one('a').get('href')
         url = url.partition("live/")[2]
         # Do not count event if it's in excluded list
@@ -246,6 +269,6 @@ if __name__ == "__main__":
   # update_last_tnmt()
   lb = sort_dict(lb)
   write_to_excel(lb)
-  # draw_chart_top3(['mikechesser', 'smyslovfan', 'peterchaplin'])
-  #   print("(!) Manually add 2 points in chart to MikeChesser in June and 5 points in August; 1 point to Peter in July") 
-  #   print("(!) For MikeChesser change one 3rd place to 2nd; math - 1st, type -2nd, pete -3rd")
+  # # draw_chart_top3(['mikechesser', 'smyslovfan', 'peterchaplin'])
+  # print("(!) Manually add 2 points in chart to MikeChesser in June and 5 points in August; 1 point to Peter in July") 
+  # print("(!) For MikeChesser change one 3rd place to 2nd; math - 1st, type -2nd, pete -3rd")
