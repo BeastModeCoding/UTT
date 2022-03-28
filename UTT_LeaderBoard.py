@@ -11,8 +11,9 @@ from datetime import date
 ####### Manual settings ########
 countEvents = False
 page_events = 1
-banned = ['kingss9830']
-tied = {'nyameba':-2, 'nicelynicely':-1}
+banned = ['kingss9830', 'henryhetolifantje', 'sundaychess11games']
+tied = {'nyameba':-2, 'nicelynicely':-1, 'patzers':2, 'alphaous':2, 'mohdleon':-1, 'andestand':-1, 'snowqueen9':-2,
+'typewriter44':5}
 # Put here links of excluded events starting after ...live/
 excluded_events = []
 # ties_for_chart = {'mikechesser':[0,0,0,0,0,2,0,0,0,0,0,0], 'smyslovfan':[0,0,0,0,0,0,0,0,0,0,0,0], 'peterchaplin':[0,0,0,0,0,0,1,0,0,0,0,0]}
@@ -122,10 +123,12 @@ def write_to_excel(leaderboard):
       </head>
       <link rel="stylesheet" type="text/css" href="df_style.css"/>
       <body>
-        <div class="bg"> 
-          <img class="logo" src="Utt_logo.png" alt="UTT_logo">
+        <div class="container">
+          <div class="bg"> 
+            <img class="logo" src="Utt_logo.png" alt="UTT_logo">
+          </div>
+          {table}
         </div>
-        {table}
       </body>
     </html>
   '''
@@ -244,10 +247,18 @@ def update_all_tnmts():
   for i in range(len(links)):
     update_lb(links[i])
     n += 1
-    print("Tnmts updated:", n)
+    print("Tnmts updated:", n)  
 
   print("Last event:", links[0])
   lb_corrections()
+
+# Delete from lb 0-pointers
+def removeZeros(lbrd:dict):
+  new_lb = {}
+  for k, v in lbrd.items():
+    if v[0] != 0:
+        new_lb.update({k: v})
+  return new_lb
 
 # Returns the number of tnmts a player successfully finished
 # def tnmts_played(player:str):
@@ -268,7 +279,9 @@ if __name__ == "__main__":
   update_all_tnmts()
   # update_last_tnmt()
   lb = sort_dict(lb)
+  lb = removeZeros(lb)
   write_to_excel(lb)
-  # # draw_chart_top3(['mikechesser', 'smyslovfan', 'peterchaplin'])
-  # print("(!) Manually add 2 points in chart to MikeChesser in June and 5 points in August; 1 point to Peter in July") 
-  # print("(!) For MikeChesser change one 3rd place to 2nd; math - 1st, type -2nd, pete -3rd")
+  # draw_chart_top3(['mikechesser', 'smyslovfan', 'peterchaplin'])
+
+  ################# NOTES ###############
+  # Typewriter: Add one 2nd place in March
