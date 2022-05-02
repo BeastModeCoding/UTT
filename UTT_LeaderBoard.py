@@ -10,10 +10,6 @@ from datetime import date
 
 ####### Manual settings ########
 countEvents = False
-page_events = 1
-banned = ['kingss9830', 'henryhetolifantje', 'sundaychess11games']
-tied = {'nyameba':-2, 'nicelynicely':-1, 'patzers':2, 'alphaous':2, 'mohdleon':-1, 'andestand':-1, 'snowqueen9':-2,
-'typewriter44':5}
 # Put here links of excluded events starting after ...live/
 excluded_events = []
 # ties_for_chart = {'mikechesser':[0,0,0,0,0,2,0,0,0,0,0,0], 'smyslovfan':[0,0,0,0,0,0,0,0,0,0,0,0], 'peterchaplin':[0,0,0,0,0,0,1,0,0,0,0,0]}
@@ -24,6 +20,16 @@ Months = {'Jan':0,'Feb':1,'Mar':2,'Apr':3,'May':4,'Jun':5,'Jul':6,'Aug':7,'Sep':
 current_month = date.today().month
 year = date.today().year
 playerDataLen = 5 if countEvents else 4
+# Fill list with banned players
+banned = []
+with open('banned.txt', 'r') as f:
+  banned = f.read().splitlines()
+# Fill dict with tied and points
+tied = {}
+with open("tied.txt") as f:
+    for line in f:
+      key,val = line.split(":")
+      tied[key] = int(val.strip())
 
 def update_lb(tnmt):
   query = get_tournament_details(tnmt) 
@@ -88,7 +94,7 @@ def update_last_tnmt():
   update_lb(url)
 
 # Добавить открытие файла (и суммирование результатов)
-def write_to_excel(leaderboard):
+def form_table(leaderboard):
   lb = leaderboard.items()
   if countEvents:
     lb = {
@@ -139,7 +145,7 @@ def write_to_excel(leaderboard):
 # Select all tourneys from this year
 def select_all_tnmts():
   tnmts = []
-  for page in range(page_events):
+  for page in range(3):
     req = requests.get("https://www.chess.com/club/live-tournaments/untitled-tuesday?&page="+str(page+1))
     html = BS(req.content, 'html.parser')
 
@@ -159,7 +165,7 @@ def select_all_tnmts():
 def get_chart_values(player:str):
   points = [0 for i in range(12)]
   total_points = 0
-  for page in reversed(range(page_events)):
+  for page in reversed(range(3)):
     req = requests.get("https://www.chess.com/club/live-tournaments/untitled-tuesday?&page="+str(page+1))
     html = BS(req.content, 'html.parser')
 
@@ -253,7 +259,7 @@ def update_all_tnmts():
   lb_corrections()
 
 # Delete from lb 0-pointers
-def removeZeros(lbrd:dict):
+def remove_zeros(lbrd:dict):
   new_lb = {}
   for k, v in lbrd.items():
     if v[0] != 0:
@@ -279,9 +285,8 @@ if __name__ == "__main__":
   update_all_tnmts()
   # update_last_tnmt()
   lb = sort_dict(lb)
-  lb = removeZeros(lb)
-  write_to_excel(lb)
+  lb = remove_zeros(lb)
+  form_table(lb)
   # draw_chart_top3(['mikechesser', 'smyslovfan', 'peterchaplin'])
 
   ################# NOTES ###############
-  # Typewriter: Add one 2nd place in March
