@@ -36,10 +36,7 @@ def update_lb(tnmt):
   query = query.json['tournament']['players'] # Gets a list of dictionaries - {username:place}
 
   # Remove banned players from the tournament
-  for player in query:
-    if player['username'] in banned:
-      query.remove(player)
-      # print("Removed", player['username'])
+  query = [player for player in query if player['username'] not in banned]
 
   for place in range(len(awards)): 
     # print("Place = ", place+1," : ","Name = ", query[place]['username'])
@@ -94,7 +91,7 @@ def update_last_tnmt():
   update_lb(url)
 
 # Добавить открытие файла (и суммирование результатов)
-def form_table(leaderboard):
+def form_table(leaderboard, toExcel=False):
   lb = leaderboard.items()
   if countEvents:
     lb = {
@@ -116,8 +113,9 @@ def form_table(leaderboard):
   df = pd.DataFrame(lb)
   df.index += 1
 
-  df.to_excel('./UTT_LB.xlsx', sheet_name='Leaderboard', index_label="Rank")
-  print("Printed to Excel")
+  if toExcel:
+    df.to_excel('./UTT_LB.xlsx', sheet_name='Leaderboard', index_label="Rank")
+    print("Printed to Excel")
 
   # Print to HTML format
   html_string = '''
@@ -249,16 +247,14 @@ def update_all_tnmts():
   else:
     print("Nothing was selected")
 
-  n = 0
   for i in range(len(links)):
     update_lb(links[i])
-    n += 1
-    print("Tnmts updated:", n)  
+    print("Tnmts updated:", i+1)  
 
   print("Last event:", links[0])
   lb_corrections()
 
-# Delete from lb 0-pointers
+# Delete from lb players with 0 points
 def remove_zeros(lbrd:dict):
   new_lb = {}
   for k, v in lbrd.items():
