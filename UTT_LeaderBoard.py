@@ -83,9 +83,9 @@ def update_last_tnmt():
   req = requests.get("https://www.chess.com/club/live-tournaments/untitled-tuesday?&page=1")
   html = BS(req.content, 'html.parser')
 
-  events = html.select_one('.tournaments-table-name')   # Gets a list of tags <a> from the page
+  events = html.select_one('.tournaments-live-name')   # Gets a list of tags <a> from the page
 
-  url = events.select_one('a').get('href')
+  url = events.get('href')
   url = url.partition("live/")[2]
   print("Last tnmt:", url)
   update_lb(url)
@@ -147,14 +147,14 @@ def select_all_tnmts():
     req = requests.get("https://www.chess.com/club/live-tournaments/untitled-tuesday?&page="+str(page+1))
     html = BS(req.content, 'html.parser')
 
-    events = html.select('.tournaments-table-name')   # Gets a list of tags <a> from the page
+    events = html.select('.tournaments-live-name')   # Gets a list of tags <a> from the page
     dates = html.select('.tournaments-live-date')
 
     # Select events from year
     for i in range(len(dates)):
       date = int(dates[i].get_text().split(', ')[1])
       if date == year:
-        url = events[i].select_one('a').get('href')
+        url = events[i].get('href')
         url = url.partition("live/")
         tnmts.append(url[2])
   return tnmts
@@ -167,7 +167,7 @@ def get_chart_values(player:str):
     req = requests.get("https://www.chess.com/club/live-tournaments/untitled-tuesday?&page="+str(page+1))
     html = BS(req.content, 'html.parser')
 
-    events = html.select('.tournaments-table-name')   # Gets a list of tags <a> from the page
+    events = html.select('.tournaments-live-name')   # Gets a list of tags <a> from the page
     dates = html.select('.tournaments-live-date')
     events.reverse()  # Reverse the list to start countig points from the Jan to Dec
     dates.reverse()
@@ -179,7 +179,7 @@ def get_chart_values(player:str):
       month = dates[i].get_text().rsplit()[0]
       # print("Month:", month)
       if yr == year:
-        url = events[i].select_one('a').get('href')
+        url = events[i].get('href')
         url = url.partition("live/")[2]
         # Do not count event if it's in excluded list
         if url not in excluded_events:
